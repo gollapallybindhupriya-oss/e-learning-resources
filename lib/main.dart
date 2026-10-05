@@ -12,15 +12,29 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'E-Learning Resources',
+
+      // NAMED ROUTES
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomePage(),
+        '/resources': (context) => const ResourcesScreen(),
+        '/courses': (context) =>
+            const ResourceDetailScreen(title: 'Courses'),
+        '/videos': (context) =>
+            const ResourceDetailScreen(title: 'Videos'),
+        '/quizzes': (context) =>
+            const ResourceDetailScreen(title: 'Quizzes'),
+      },
+
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomePage(),
     );
   }
 }
 
-// HOME SCREEN
+// ================= HOME SCREEN =================
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -73,6 +87,7 @@ class HomePage extends StatelessWidget {
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
+
                   Text(
                     'Learn Flutter',
                     style: TextStyle(
@@ -129,18 +144,21 @@ class HomePage extends StatelessWidget {
                       Icons.book,
                       'Courses',
                       true,
+                      '/courses',
                     ),
                     resourceCard(
                       context,
                       Icons.video_library,
                       'Videos',
                       true,
+                      '/videos',
                     ),
                     resourceCard(
                       context,
                       Icons.quiz,
                       'Quizzes',
                       true,
+                      '/quizzes',
                     ),
                   ],
                 )
@@ -155,18 +173,21 @@ class HomePage extends StatelessWidget {
                       Icons.book,
                       'Courses',
                       false,
+                      '/courses',
                     ),
                     resourceCard(
                       context,
                       Icons.video_library,
                       'Videos',
                       false,
+                      '/videos',
                     ),
                     resourceCard(
                       context,
                       Icons.quiz,
                       'Quizzes',
                       false,
+                      '/quizzes',
                     ),
                   ],
                 )
@@ -179,33 +200,33 @@ class HomePage extends StatelessWidget {
                       Icons.book,
                       'Courses',
                       false,
+                      '/courses',
                     ),
                     resourceCard(
                       context,
                       Icons.video_library,
                       'Videos',
                       false,
+                      '/videos',
                     ),
                     resourceCard(
                       context,
                       Icons.quiz,
                       'Quizzes',
                       false,
+                      '/quizzes',
                     ),
                   ],
                 ),
 
               const SizedBox(height: 30),
 
-              // NAVIGATION BUTTON
+              // NAMED ROUTE NAVIGATION
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          const ResourcesScreen(),
-                    ),
+                    '/resources',
                   );
                 },
                 child: const Text('View All Resources'),
@@ -241,25 +262,30 @@ class HomePage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 15),
+
                     Text(
                       '• Flutter Basics',
                       style: TextStyle(
                         fontSize: isMobile ? 16 : 20,
                       ),
                     ),
+
                     Text(
                       '• Dart Programming',
                       style: TextStyle(
                         fontSize: isMobile ? 16 : 20,
                       ),
                     ),
+
                     Text(
                       '• UI Design',
                       style: TextStyle(
                         fontSize: isMobile ? 16 : 20,
                       ),
                     ),
+
                     Text(
                       '• Mobile App Development',
                       style: TextStyle(
@@ -295,15 +321,13 @@ class HomePage extends StatelessWidget {
     IconData icon,
     String title,
     bool isMobile,
+    String route,
   ) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) =>
-                ResourceDetailScreen(title: title),
-          ),
+          route,
         );
       },
       child: Container(
@@ -321,7 +345,9 @@ class HomePage extends StatelessWidget {
               icon,
               size: isMobile ? 40 : 50,
             ),
+
             const SizedBox(height: 8),
+
             Text(
               title,
               style: TextStyle(
@@ -336,7 +362,8 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// RESOURCES SCREEN
+// ================= RESOURCES SCREEN =================
+
 class ResourcesScreen extends StatelessWidget {
   const ResourcesScreen({super.key});
 
@@ -346,8 +373,10 @@ class ResourcesScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('All Resources'),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(20),
+
         child: Column(
           children: [
             const Text(
@@ -364,46 +393,31 @@ class ResourcesScreen extends StatelessWidget {
               leading: const Icon(Icons.book),
               title: const Text('Flutter Basics'),
               onTap: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const ResourceDetailScreen(
-                      title: 'Flutter Basics',
-                    ),
-                  ),
+                  '/courses',
                 );
               },
             ),
 
             ListTile(
-              leading: const Icon(Icons.code),
-              title: const Text('Dart Programming'),
+              leading: const Icon(Icons.video_library),
+              title: const Text('Videos'),
               onTap: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const ResourceDetailScreen(
-                      title: 'Dart Programming',
-                    ),
-                  ),
+                  '/videos',
                 );
               },
             ),
 
             ListTile(
-              leading: const Icon(Icons.design_services),
-              title: const Text('UI Design'),
+              leading: const Icon(Icons.quiz),
+              title: const Text('Quizzes'),
               onTap: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const ResourceDetailScreen(
-                      title: 'UI Design',
-                    ),
-                  ),
+                  '/quizzes',
                 );
               },
             ),
@@ -414,7 +428,7 @@ class ResourcesScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Back to Home'),
+              child: const Text('Back'),
             ),
           ],
         ),
@@ -423,7 +437,8 @@ class ResourcesScreen extends StatelessWidget {
   }
 }
 
-// DETAIL SCREEN
+// ================= DETAIL SCREEN =================
+
 class ResourceDetailScreen extends StatelessWidget {
   final String title;
 
@@ -438,6 +453,7 @@ class ResourceDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
+
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
