@@ -17,42 +17,16 @@ class AppStyles {
   static const Color primary = Color(0xFF3157A4);
   static const Color accent = Color(0xFF00A6A6);
   static const Color background = Color(0xFFF5F7FC);
-  static const Color cardColor = Colors.white;
-  static const Color textColor = Color(0xFF202A44);
-  static const Color subtitleColor = Color(0xFF64748B);
-
-  static const TextStyle appTitle = TextStyle(
-    fontSize: 22,
-    fontWeight: FontWeight.bold,
-    color: Colors.white,
-  );
 
   static const TextStyle heading = TextStyle(
     fontSize: 25,
     fontWeight: FontWeight.bold,
-    color: textColor,
+    color: Color(0xFF202A44),
   );
 
   static const TextStyle subtitle = TextStyle(
     fontSize: 15,
-    color: subtitleColor,
-  );
-
-  static const TextStyle resourceTitle = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.bold,
-    color: textColor,
-  );
-
-  static const TextStyle body = TextStyle(
-    fontSize: 16,
-    color: textColor,
-  );
-
-  static const TextStyle buttonText = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.bold,
-    color: Colors.white,
+    color: Color(0xFF64748B),
   );
 }
 
@@ -67,7 +41,7 @@ class LearningState extends ChangeNotifier {
   }
 }
 
-// ================= APP THEME =================
+// ================= APP =================
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -77,39 +51,20 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'E-Learning Resources',
-
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppStyles.primary,
-          primary: AppStyles.primary,
-          secondary: AppStyles.accent,
-          surface: AppStyles.cardColor,
         ),
         scaffoldBackgroundColor: AppStyles.background,
-
         appBarTheme: const AppBarTheme(
           backgroundColor: AppStyles.primary,
           foregroundColor: Colors.white,
-          centerTitle: false,
-          titleTextStyle: AppStyles.appTitle,
-          elevation: 0,
         ),
-
-        cardTheme: CardThemeData(
-          color: AppStyles.cardColor,
-          elevation: 2,
-          margin: const EdgeInsets.all(8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppStyles.primary,
             foregroundColor: Colors.white,
-            textStyle: AppStyles.buttonText,
             padding: const EdgeInsets.symmetric(
               horizontal: 22,
               vertical: 14,
@@ -119,14 +74,6 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-
-        textTheme: const TextTheme(
-          headlineSmall: AppStyles.heading,
-          titleMedium: AppStyles.resourceTitle,
-          bodyLarge: AppStyles.body,
-          bodyMedium: AppStyles.subtitle,
-        ),
-
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
@@ -135,11 +82,11 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-
       initialRoute: '/',
       routes: {
         '/': (_) => const HomePage(),
         '/resources': (_) => const ResourcesScreen(),
+        '/form': (_) => const CourseFormScreen(),
         '/courses': (_) =>
             const ResourceDetailScreen(title: 'Courses'),
         '/videos': (_) =>
@@ -174,14 +121,11 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const LearningHeader(),
-
             const SizedBox(height: 25),
-
             const SectionTitle(
               title: 'Explore Resources',
               subtitle: 'Choose a category to start learning',
             ),
-
             const SizedBox(height: 12),
 
             if (isMobile)
@@ -238,9 +182,7 @@ class HomePage extends StatelessWidget {
               ),
 
             const SizedBox(height: 25),
-
             const LearningProgressCard(),
-
             const SizedBox(height: 16),
 
             CustomActionButton(
@@ -251,15 +193,18 @@ class HomePage extends StatelessWidget {
               },
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 12),
 
-            const SectionTitle(
-              title: 'Available Resources',
-              subtitle: 'Explore the learning materials',
+            CustomActionButton(
+              text: 'Register for a Course',
+              icon: Icons.app_registration,
+              onPressed: () {
+                Navigator.pushNamed(context, '/form');
+              },
             ),
 
-            const SizedBox(height: 10),
-
+            const SizedBox(height: 25),
+            const SectionTitle(title: 'Available Resources'),
             const ResourceInfoTile(
               icon: Icons.book,
               title: 'Flutter Basics',
@@ -272,9 +217,7 @@ class HomePage extends StatelessWidget {
               icon: Icons.design_services,
               title: 'UI Design',
             ),
-
             const SizedBox(height: 25),
-
             const CounterWidget(),
           ],
         ),
@@ -283,7 +226,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// ================= HEADER WIDGET =================
+// ================= HEADER =================
 
 class LearningHeader extends StatelessWidget {
   const LearningHeader({super.key});
@@ -328,12 +271,6 @@ class LearningHeader extends StatelessWidget {
               color: Colors.white,
               fontSize: width < 600 ? 28 : 36,
               fontWeight: FontWeight.bold,
-              shadows: const [
-                Shadow(
-                  color: Colors.black45,
-                  blurRadius: 8,
-                ),
-              ],
             ),
           ),
         ],
@@ -359,16 +296,10 @@ class SectionTitle extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+        Text(title, style: AppStyles.heading),
         if (subtitle != null) ...[
           const SizedBox(height: 5),
-          Text(
-            subtitle!,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          Text(subtitle!, style: AppStyles.subtitle),
         ],
       ],
     );
@@ -400,43 +331,22 @@ class ResourceCard extends StatelessWidget {
       child: Card(
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            Navigator.pushNamed(context, route);
-          },
+          onTap: () => Navigator.pushNamed(context, route),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor:
-                      AppStyles.primary.withValues(alpha: 0.1),
-                  child: Icon(
-                    icon,
-                    size: 30,
-                    color: AppStyles.primary,
-                  ),
-                ),
+                Icon(icon, size: 40, color: AppStyles.primary),
                 const SizedBox(height: 12),
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  description,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Open →',
-                  style: TextStyle(
-                    color: AppStyles.primary,
+                  style: const TextStyle(
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 6),
+                Text(description, style: AppStyles.subtitle),
               ],
             ),
           ),
@@ -446,7 +356,7 @@ class ResourceCard extends StatelessWidget {
   }
 }
 
-// ================= CUSTOM ACTION BUTTON =================
+// ================= CUSTOM BUTTON =================
 
 class CustomActionButton extends StatelessWidget {
   final String text;
@@ -473,7 +383,7 @@ class CustomActionButton extends StatelessWidget {
   }
 }
 
-// ================= PROVIDER PROGRESS CARD =================
+// ================= PROVIDER PROGRESS =================
 
 class LearningProgressCard extends StatelessWidget {
   const LearningProgressCard({super.key});
@@ -493,14 +403,14 @@ class LearningProgressCard extends StatelessWidget {
         title: const Text('Resources Marked as Learned'),
         trailing: Text(
           '$completed',
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: AppStyles.heading,
         ),
       ),
     );
   }
 }
 
-// ================= RESOURCE INFORMATION TILE =================
+// ================= RESOURCE TILE =================
 
 class ResourceInfoTile extends StatelessWidget {
   final IconData icon;
@@ -517,10 +427,7 @@ class ResourceInfoTile extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: Icon(icon, color: AppStyles.primary),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        title: Text(title),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       ),
     );
@@ -548,11 +455,7 @@ class _CounterWidgetState extends State<CounterWidget> {
           children: [
             const SectionTitle(title: 'setState() Example'),
             const SizedBox(height: 10),
-            Text(
-              'Button clicked: $count times',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 10),
+            Text('Button clicked: $count times'),
             CustomActionButton(
               text: 'Click Me',
               icon: Icons.touch_app,
@@ -563,6 +466,369 @@ class _CounterWidgetState extends State<CounterWidget> {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ================= COURSE REGISTRATION FORM =================
+
+class CourseFormScreen extends StatefulWidget {
+  const CourseFormScreen({super.key});
+
+  @override
+  State<CourseFormScreen> createState() => _CourseFormScreenState();
+}
+
+class _CourseFormScreenState extends State<CourseFormScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController();
+
+  String? _selectedCourse;
+  String? _gender;
+  String _experience = 'Beginner';
+  DateTime? _dateOfBirth;
+  bool _acceptedTerms = false;
+  bool _showPassword = false;
+
+  final List<String> _courses = [
+    'Flutter Development',
+    'Dart Programming',
+    'Web Development',
+    'UI/UX Design',
+  ];
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(now.year - 18, now.month, now.day),
+      firstDate: DateTime(1950),
+      lastDate: now,
+    );
+
+    if (picked != null) {
+      setState(() {
+        _dateOfBirth = picked;
+      });
+    }
+  }
+
+  void _submitForm() {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_gender == null || _selectedCourse == null ||
+        _dateOfBirth == null || !_acceptedTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Please select gender, course, date of birth, and accept the terms.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Registration Successful'),
+        content: Text(
+          'Thank you, ${_nameController.text.trim()}!\n'
+          'Course: $_selectedCourse\n'
+          'Experience: $_experience',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Navigator.pop(context);
+            },
+            child: const Text('Done'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final isMobile = width < 600;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Course Registration'),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(isMobile ? 16 : 32),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 650),
+            child: Card(
+              child: Padding(
+                padding: EdgeInsets.all(isMobile ? 18 : 28),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SectionTitle(
+                        title: 'Registration Form',
+                        subtitle: 'Enter your details to enroll in a course',
+                      ),
+                      const SizedBox(height: 24),
+
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Full Name',
+                          prefixIcon: Icon(Icons.person),
+                          hintText: 'Enter your full name',
+                        ),
+                        textCapitalization: TextCapitalization.words,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter your name';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          labelText: 'Email Address',
+                          prefixIcon: Icon(Icons.email),
+                          hintText: 'example@email.com',
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null ||
+                              !RegExp(r'^[^@]+@[^@]+\.[^@]+$')
+                                  .hasMatch(value.trim())) {
+                            return 'Enter a valid email address';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: const InputDecoration(
+                          labelText: 'Phone Number',
+                          prefixIcon: Icon(Icons.phone),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null ||
+                              !RegExp(r'^\d{10}$').hasMatch(value.trim())) {
+                            return 'Enter a 10-digit phone number';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: !_showPassword,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _showPassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
+                            },
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.length < 6) {
+                            return 'Password must have at least 6 characters';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      DropdownButtonFormField<String>(
+                        value: _selectedCourse,
+                        decoration: const InputDecoration(
+                          labelText: 'Select Course',
+                          prefixIcon: Icon(Icons.school),
+                        ),
+                        items: _courses.map((course) {
+                          return DropdownMenuItem(
+                            value: course,
+                            child: Text(course),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedCourse = value;
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'Please select a course' : null,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      const Text(
+                        'Gender',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+
+                      RadioGroup<String>(
+                        groupValue: _gender,
+                        onChanged: (value) {
+                          setState(() {
+                            _gender = value;
+                          });
+                        },
+                        child: const Column(
+                          children: [
+                            RadioListTile<String>(
+                              title: Text('Female'),
+                              value: 'Female',
+                            ),
+                            RadioListTile<String>(
+                              title: Text('Male'),
+                              value: 'Male',
+                            ),
+                            RadioListTile<String>(
+                              title: Text('Prefer not to say'),
+                              value: 'Prefer not to say',
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      OutlinedButton.icon(
+                        onPressed: _pickDate,
+                        icon: const Icon(Icons.calendar_month),
+                        label: Text(
+                          _dateOfBirth == null
+                              ? 'Select Date of Birth'
+                              : 'Date of Birth: '
+                                  '${_dateOfBirth!.day}/'
+                                  '${_dateOfBirth!.month}/'
+                                  '${_dateOfBirth!.year}',
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      DropdownButtonFormField<String>(
+                        value: _experience,
+                        decoration: const InputDecoration(
+                          labelText: 'Experience Level',
+                          prefixIcon: Icon(Icons.trending_up),
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'Beginner',
+                            child: Text('Beginner'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'Intermediate',
+                            child: Text('Intermediate'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'Advanced',
+                            child: Text('Advanced'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _experience = value;
+                            });
+                          }
+                        },
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        value: _acceptedTerms,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: const Text(
+                          'I accept the terms and conditions',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _acceptedTerms = value ?? false;
+                          });
+                        },
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      CustomActionButton(
+                        text: 'Submit Registration',
+                        icon: Icons.send,
+                        onPressed: _submitForm,
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      TextButton(
+                        onPressed: () {
+                          _formKey.currentState?.reset();
+                          _nameController.clear();
+                          _emailController.clear();
+                          _passwordController.clear();
+                          _phoneController.clear();
+
+                          setState(() {
+                            _selectedCourse = null;
+                            _gender = null;
+                            _experience = 'Beginner';
+                            _dateOfBirth = null;
+                            _acceptedTerms = false;
+                            _showPassword = false;
+                          });
+                        },
+                        child: const Text('Clear Form'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -586,14 +852,6 @@ class ResourcesScreen extends StatelessWidget {
             subtitle: 'Choose what you want to learn',
           ),
           const SizedBox(height: 15),
-          const ResourceInfoTile(
-            icon: Icons.book,
-            title: 'Flutter Basics',
-          ),
-          const ResourceInfoTile(
-            icon: Icons.code,
-            title: 'Dart Programming',
-          ),
           ResourceCard(
             icon: Icons.book,
             title: 'Courses',
@@ -623,7 +881,7 @@ class ResourcesScreen extends StatelessWidget {
   }
 }
 
-// ================= RESOURCE DETAIL SCREEN =================
+// ================= DETAIL SCREEN =================
 
 class ResourceDetailScreen extends StatelessWidget {
   final String title;
@@ -651,22 +909,16 @@ class ResourceDetailScreen extends StatelessWidget {
                 color: AppStyles.primary,
               ),
               const SizedBox(height: 20),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+              Text(title, style: AppStyles.heading),
               const SizedBox(height: 12),
-              Text(
+              const Text(
                 'Explore this learning resource.',
-                style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               Text(
-                'Total resources marked as learned: '
+                'Resources marked as learned: '
                 '${learningState.completedResources}',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 15),
               CustomActionButton(
