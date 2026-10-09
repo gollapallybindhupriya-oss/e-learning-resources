@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,9 +10,9 @@ void main() {
   );
 }
 
-// --------------------------------------------------
+// ==================================================
 // PROVIDER STATE MANAGEMENT
-// --------------------------------------------------
+// ==================================================
 
 class LearningState extends ChangeNotifier {
   int completedResources = 0;
@@ -24,9 +23,9 @@ class LearningState extends ChangeNotifier {
   }
 }
 
-// --------------------------------------------------
+// ==================================================
 // APP STYLES
-// --------------------------------------------------
+// ==================================================
 
 class AppStyles {
   static const Color primary = Color(0xFF4F46E5);
@@ -45,9 +44,9 @@ class AppStyles {
   );
 }
 
-// --------------------------------------------------
-// MAIN APP AND NAMED ROUTES
-// --------------------------------------------------
+// ==================================================
+// MAIN APP AND ROUTES
+// ==================================================
 
 class ELearningApp extends StatelessWidget {
   const ELearningApp({super.key});
@@ -59,9 +58,7 @@ class ELearningApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppStyles.primary,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppStyles.primary),
         scaffoldBackgroundColor: AppStyles.background,
         appBarTheme: const AppBarTheme(
           backgroundColor: AppStyles.primary,
@@ -70,19 +67,14 @@ class ELearningApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: Colors.black12),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(
-              color: AppStyles.primary,
-              width: 2,
-            ),
+            borderSide: const BorderSide(color: AppStyles.primary, width: 2),
           ),
         ),
       ),
@@ -94,16 +86,15 @@ class ELearningApp extends StatelessWidget {
         '/videos': (_) => const ResourcesScreen(),
         '/quizzes': (_) => const CounterWidget(),
         '/form': (_) => const CourseFormScreen(),
+        '/animations': (_) => const AnimationLabScreen(),
       },
     );
   }
 }
 
-// --------------------------------------------------
-// ANIMATED PAGE ENTRANCE
-// Uses AnimationController, FadeTransition and
-// SlideTransition from Flutter's animation framework.
-// --------------------------------------------------
+// ==================================================
+// REUSABLE PAGE FADE AND SLIDE ANIMATION
+// ==================================================
 
 class PageEntrance extends StatefulWidget {
   final Widget child;
@@ -129,20 +120,12 @@ class _PageEntranceState extends State<PageEntrance>
       duration: const Duration(milliseconds: 700),
     );
 
-    _fade = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    );
+    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
 
     _slide = Tween<Offset>(
       begin: const Offset(0, 0.08),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOutCubic,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _controller.forward();
   }
@@ -157,17 +140,14 @@ class _PageEntranceState extends State<PageEntrance>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _fade,
-      child: SlideTransition(
-        position: _slide,
-        child: widget.child,
-      ),
+      child: SlideTransition(position: _slide, child: widget.child),
     );
   }
 }
 
-// --------------------------------------------------
+// ==================================================
 // REUSABLE WIDGETS
-// --------------------------------------------------
+// ==================================================
 
 class LearningHeader extends StatelessWidget {
   final String title;
@@ -203,10 +183,7 @@ class SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -231,20 +208,16 @@ class CustomActionButton extends StatelessWidget {
       icon: Icon(icon),
       label: Text(label),
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 18,
-          vertical: 14,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       ),
     );
   }
 }
 
-// --------------------------------------------------
+// ==================================================
 // ANIMATED RESOURCE CARD
-// AnimatedContainer smoothly changes its appearance.
-// MouseRegion supports hover on desktop and web.
-// --------------------------------------------------
+// Hover, scale, shadow, and Hero animations
+// ==================================================
 
 class ResourceCard extends StatefulWidget {
   final String title;
@@ -284,7 +257,6 @@ class _ResourceCardState extends State<ResourceCard> {
         child: AnimatedScale(
           scale: _pressed ? 0.97 : (_hovered ? 1.025 : 1.0),
           duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,
@@ -307,7 +279,7 @@ class _ResourceCardState extends State<ResourceCard> {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -320,10 +292,13 @@ class _ResourceCardState extends State<ResourceCard> {
                           : AppStyles.primary.withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
-                      widget.icon,
-                      size: 30,
-                      color: _hovered ? Colors.white : AppStyles.primary,
+                    child: Hero(
+                      tag: 'resource-icon-${widget.title}',
+                      child: Icon(
+                        widget.icon,
+                        size: 30,
+                        color: _hovered ? Colors.white : AppStyles.primary,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -355,18 +330,16 @@ class _ResourceCardState extends State<ResourceCard> {
   }
 }
 
-// --------------------------------------------------
+// ==================================================
 // ANIMATED LEARNING PROGRESS
-// AnimatedSwitcher transitions when the count changes.
-// --------------------------------------------------
+// ==================================================
 
 class LearningProgressCard extends StatelessWidget {
   const LearningProgressCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final completed =
-        context.watch<LearningState>().completedResources;
+    final completed = context.watch<LearningState>().completedResources;
 
     return Card(
       color: Colors.white,
@@ -374,11 +347,7 @@ class LearningProgressCard extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         child: Row(
           children: [
-            const Icon(
-              Icons.emoji_events,
-              color: AppStyles.primary,
-              size: 38,
-            ),
+            const Icon(Icons.emoji_events, color: AppStyles.primary, size: 38),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
@@ -440,9 +409,9 @@ class ResourceInfoTile extends StatelessWidget {
   }
 }
 
-// --------------------------------------------------
-// HOME PAGE: RESPONSIVE + ANIMATED
-// --------------------------------------------------
+// ==================================================
+// HOME PAGE
+// ==================================================
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -453,6 +422,11 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('E-Learning Resources'),
         actions: [
+          IconButton(
+            tooltip: 'Explore animations',
+            icon: const Icon(Icons.animation),
+            onPressed: () => Navigator.pushNamed(context, '/animations'),
+          ),
           IconButton(
             tooltip: 'Register for a course',
             icon: const Icon(Icons.app_registration),
@@ -494,6 +468,11 @@ class HomePage extends StatelessWidget {
               onTap: () => Navigator.pushNamed(context, '/form'),
             ),
             ListTile(
+              leading: const Icon(Icons.animation),
+              title: const Text('Animation Lab'),
+              onTap: () => Navigator.pushNamed(context, '/animations'),
+            ),
+            ListTile(
               leading: const Icon(Icons.quiz),
               title: const Text('Counter Demo'),
               onTap: () => Navigator.pushNamed(context, '/quizzes'),
@@ -508,8 +487,8 @@ class HomePage extends StatelessWidget {
             final columns = constraints.maxWidth >= 1000
                 ? 3
                 : constraints.maxWidth >= 600
-                    ? 2
-                    : 1;
+                ? 2
+                : 1;
 
             return SingleChildScrollView(
               padding: EdgeInsets.all(isMobile ? 16 : 28),
@@ -522,7 +501,7 @@ class HomePage extends StatelessWidget {
                       const LearningHeader(
                         title: 'Learn something new!',
                         subtitle:
-                            'Explore courses, videos, notes and quizzes.',
+                            'Explore courses, videos, notes and animations.',
                       ),
                       const SizedBox(height: 22),
                       ClipRRect(
@@ -579,6 +558,13 @@ class HomePage extends StatelessWidget {
                             onTap: () =>
                                 Navigator.pushNamed(context, '/quizzes'),
                           ),
+                          ResourceCard(
+                            title: 'Animation Lab',
+                            description: 'Experiment with fade, slide, scale and rotation.',
+                            icon: Icons.animation,
+                            onTap: () =>
+                                Navigator.pushNamed(context, '/animations'),
+                          ),
                         ],
                       ),
                       const SectionTitle('Learning Progress'),
@@ -587,8 +573,7 @@ class HomePage extends StatelessWidget {
                       CustomActionButton(
                         label: 'Register for a Course',
                         icon: Icons.app_registration,
-                        onPressed: () =>
-                            Navigator.pushNamed(context, '/form'),
+                        onPressed: () => Navigator.pushNamed(context, '/form'),
                       ),
                     ],
                   ),
@@ -602,9 +587,314 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// --------------------------------------------------
+// ==================================================
+// ANIMATION LAB
+// Try fade, slide, scale, rotation, container,
+// and AnimatedSwitcher transitions interactively.
+// ==================================================
+
+class AnimationLabScreen extends StatefulWidget {
+  const AnimationLabScreen({super.key});
+
+  @override
+  State<AnimationLabScreen> createState() => _AnimationLabScreenState();
+}
+
+class _AnimationLabScreenState extends State<AnimationLabScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _rotationController;
+  late final Animation<double> _rotation;
+
+  bool _showFade = true;
+  bool _slideRight = false;
+  bool _enlarged = false;
+  bool _containerChanged = false;
+  bool _showFirstMessage = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+
+    _rotation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _rotationController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _rotationController.dispose();
+    super.dispose();
+  }
+
+  Widget _demoCard({
+    required String title,
+    required String description,
+    required Widget demo,
+    required Widget action,
+  }) {
+    return Card(
+      color: Colors.white,
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 5),
+            Text(description, style: AppStyles.subtitle),
+            const SizedBox(height: 18),
+            Center(
+              child: SizedBox(height: 115, child: Center(child: demo)),
+            ),
+            const SizedBox(height: 12),
+            Center(child: action),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Flutter Animation Lab')),
+      body: PageEntrance(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final columns = constraints.maxWidth >= 1000
+                ? 3
+                : constraints.maxWidth >= 650
+                ? 2
+                : 1;
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1100),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const LearningHeader(
+                        title: 'Experiment with Animations',
+                        subtitle:
+                            'Tap the buttons to see each animation in action.',
+                      ),
+                      const SizedBox(height: 20),
+                      GridView.count(
+                        crossAxisCount: columns,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisSpacing: 14,
+                        mainAxisSpacing: 14,
+                        childAspectRatio: columns == 1 ? 1.2 : 0.9,
+                        children: [
+                          // FADE ANIMATION
+                          _demoCard(
+                            title: '1. Fade',
+                            description: 'Change opacity to make an element appear or disappear.',
+                            demo: AnimatedOpacity(
+                              opacity: _showFade ? 1 : 0.08,
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                              child: const Icon(
+                                Icons.lightbulb,
+                                size: 72,
+                                color: Colors.amber,
+                              ),
+                            ),
+                            action: ElevatedButton(
+                              onPressed: () {
+                                setState(() => _showFade = !_showFade);
+                              },
+                              child: Text(_showFade ? 'Fade Out' : 'Fade In'),
+                            ),
+                          ),
+
+                          // SLIDE ANIMATION
+                          _demoCard(
+                            title: '2. Slide',
+                            description: 'Move a widget horizontally with AnimatedSlide.',
+                            demo: AnimatedSlide(
+                              offset: _slideRight
+                                  ? const Offset(0.5, 0)
+                                  : Offset.zero,
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOutCubic,
+                              child: const Icon(
+                                Icons.school,
+                                size: 68,
+                                color: AppStyles.primary,
+                              ),
+                            ),
+                            action: ElevatedButton(
+                              onPressed: () {
+                                setState(() => _slideRight = !_slideRight);
+                              },
+                              child: const Text('Move Icon'),
+                            ),
+                          ),
+
+                          // SCALE ANIMATION
+                          _demoCard(
+                            title: '3. Scale',
+                            description:
+                                'Increase or decrease the widget size.',
+                            demo: AnimatedScale(
+                              scale: _enlarged ? 1.5 : 0.8,
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.elasticOut,
+                              child: const Icon(
+                                Icons.favorite,
+                                size: 58,
+                                color: Colors.pink,
+                              ),
+                            ),
+                            action: ElevatedButton(
+                              onPressed: () {
+                                setState(() => _enlarged = !_enlarged);
+                              },
+                              child: const Text('Change Size'),
+                            ),
+                          ),
+
+                          // ROTATION ANIMATION
+                          _demoCard(
+                            title: '4. Rotation',
+                            description:
+                                'Rotate an icon using AnimationController.',
+                            demo: RotationTransition(
+                              turns: _rotation,
+                              child: const Icon(
+                                Icons.settings,
+                                size: 70,
+                                color: Colors.teal,
+                              ),
+                            ),
+                            action: Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 8,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _rotationController.forward();
+                                  },
+                                  child: const Text('Rotate'),
+                                ),
+                                OutlinedButton(
+                                  onPressed: () {
+                                    _rotationController.reset();
+                                  },
+                                  child: const Text('Reset'),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // ANIMATED CONTAINER
+                          _demoCard(
+                            title: '5. Container',
+                            description:
+                                'Animate color, width and border radius.',
+                            demo: AnimatedContainer(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                              width: _containerChanged ? 150 : 95,
+                              height: _containerChanged ? 75 : 95,
+                              decoration: BoxDecoration(
+                                color: _containerChanged
+                                    ? Colors.orange
+                                    : AppStyles.primary,
+                                borderRadius: BorderRadius.circular(
+                                  _containerChanged ? 30 : 8,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.auto_awesome,
+                                color: Colors.white,
+                                size: 38,
+                              ),
+                            ),
+                            action: ElevatedButton(
+                              onPressed: () {
+                                setState(
+                                  () => _containerChanged = !_containerChanged,
+                                );
+                              },
+                              child: const Text('Change Container'),
+                            ),
+                          ),
+
+                          // ANIMATED SWITCHER
+                          _demoCard(
+                            title: '6. AnimatedSwitcher',
+                            description:
+                                'Replace content with a smooth transition.',
+                            demo: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 450),
+                              transitionBuilder: (child, animation) {
+                                return ScaleTransition(
+                                  scale: animation,
+                                  child: FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: Icon(
+                                _showFirstMessage
+                                    ? Icons.menu_book
+                                    : Icons.play_circle_fill,
+                                key: ValueKey<bool>(_showFirstMessage),
+                                size: 70,
+                                color: _showFirstMessage
+                                    ? AppStyles.primary
+                                    : Colors.deepOrange,
+                              ),
+                            ),
+                            action: ElevatedButton(
+                              onPressed: () {
+                                setState(
+                                  () => _showFirstMessage = !_showFirstMessage,
+                                );
+                              },
+                              child: const Text('Switch Icon'),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      const ResourceInfoTile(
+                        icon: Icons.info_outline,
+                        title: 'What you learned',
+                        description:
+                            'Fade, slide, scale, rotation, AnimatedContainer '
+                            'and AnimatedSwitcher.',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+// ==================================================
 // RESOURCES SCREEN
-// --------------------------------------------------
+// ==================================================
 
 class ResourcesScreen extends StatelessWidget {
   const ResourcesScreen({super.key});
@@ -612,14 +902,26 @@ class ResourcesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resources = [
-      ('Programming Fundamentals',
-          'Learn the basics of programming.', Icons.code),
-      ('Web Development',
-          'Explore HTML, CSS and responsive design.', Icons.web),
-      ('Database Management',
-          'Understand tables, SQL and databases.', Icons.storage),
-      ('Data Structures',
-          'Study lists, stacks, queues and trees.', Icons.account_tree),
+      (
+        'Programming Fundamentals',
+        'Learn the basics of programming.',
+        Icons.code,
+      ),
+      (
+        'Web Development',
+        'Explore HTML, CSS and responsive design.',
+        Icons.web,
+      ),
+      (
+        'Database Management',
+        'Understand tables, SQL and databases.',
+        Icons.storage,
+      ),
+      (
+        'Data Structures',
+        'Study lists, stacks, queues and trees.',
+        Icons.account_tree,
+      ),
     ];
 
     return Scaffold(
@@ -661,10 +963,29 @@ class ResourcesScreen extends StatelessWidget {
   }
 }
 
+// ==================================================
+// RESOURCE DETAIL SCREEN WITH HERO ANIMATION
+// ==================================================
+
 class ResourceDetailScreen extends StatelessWidget {
   final String title;
 
   const ResourceDetailScreen({super.key, required this.title});
+
+  IconData get resourceIcon {
+    switch (title) {
+      case 'Programming Fundamentals':
+        return Icons.code;
+      case 'Web Development':
+        return Icons.web;
+      case 'Database Management':
+        return Icons.storage;
+      case 'Data Structures':
+        return Icons.account_tree;
+      default:
+        return Icons.menu_book;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -674,6 +995,11 @@ class ResourceDetailScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            Hero(
+              tag: 'resource-icon-$title',
+              child: Icon(resourceIcon, size: 85, color: AppStyles.primary),
+            ),
+            const SizedBox(height: 20),
             Text(title, style: AppStyles.heading),
             const SizedBox(height: 12),
             const Text(
@@ -704,9 +1030,7 @@ class ResourceDetailScreen extends StatelessWidget {
               onPressed: () {
                 context.read<LearningState>().markAsLearned();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Resource marked as learned!'),
-                  ),
+                  const SnackBar(content: Text('Resource marked as learned!')),
                 );
               },
             ),
@@ -717,9 +1041,9 @@ class ResourceDetailScreen extends StatelessWidget {
   }
 }
 
-// --------------------------------------------------
-// STATEFUL COUNTER DEMO WITH ANIMATED COUNT
-// --------------------------------------------------
+// ==================================================
+// COUNTER WITH ANIMATED SWITCHER
+// ==================================================
 
 class CounterWidget extends StatefulWidget {
   const CounterWidget({super.key});
@@ -746,10 +1070,7 @@ class _CounterWidgetState extends State<CounterWidget> {
                 transitionBuilder: (child, animation) {
                   return ScaleTransition(
                     scale: animation,
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    ),
+                    child: FadeTransition(opacity: animation, child: child),
                   );
                 },
                 child: Text(
@@ -783,10 +1104,9 @@ class _CounterWidgetState extends State<CounterWidget> {
   }
 }
 
-// --------------------------------------------------
-// COURSE REGISTRATION FORM
-// Validation + animated entrance + loading state
-// --------------------------------------------------
+// ==================================================
+// COURSE REGISTRATION FORM WITH VALIDATION
+// ==================================================
 
 class CourseFormScreen extends StatefulWidget {
   const CourseFormScreen({super.key});
@@ -834,7 +1154,9 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
     final name = value?.trim() ?? '';
 
     if (name.isEmpty) return 'Please enter your full name.';
-    if (name.length < 3) return 'Name must contain at least 3 characters.';
+    if (name.length < 3) {
+      return 'Name must contain at least 3 characters.';
+    }
     if (!RegExp(r"^[a-zA-Z][a-zA-Z .'-]*$").hasMatch(name)) {
       return 'Enter a valid name using letters only.';
     }
@@ -845,9 +1167,8 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
     final email = value?.trim() ?? '';
 
     if (email.isEmpty) return 'Please enter your email address.';
-    if (!RegExp(
-      r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
-    ).hasMatch(email)) {
+    if (!RegExp(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+        .hasMatch(email)) {
       return 'Enter a valid email, for example name@example.com.';
     }
     return null;
@@ -949,7 +1270,7 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      // Demo delay. Replace this with your backend/API request.
+      // Demo delay. Replace with your backend/API request.
       await Future<void>.delayed(const Duration(milliseconds: 800));
 
       if (!mounted) return;
@@ -959,11 +1280,7 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
         context: context,
         barrierDismissible: false,
         builder: (dialogContext) => AlertDialog(
-          icon: const Icon(
-            Icons.check_circle,
-            color: Colors.green,
-            size: 48,
-          ),
+          icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
           title: const Text('Registration Successful'),
           content: Text(
             'Thank you, ${_nameController.text.trim()}!\n\n'
@@ -986,10 +1303,7 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _isSubmitting = false);
-      _showMessage(
-        'Registration failed. Please try again.',
-        isError: true,
-      );
+      _showMessage('Registration failed. Please try again.', isError: true);
     }
   }
 
@@ -1020,10 +1334,7 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
   Widget _buildLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, top: 16),
-      child: Text(
-        text,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
+      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
     );
   }
 
@@ -1049,8 +1360,7 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                         padding: EdgeInsets.all(isMobile ? 16 : 28),
                         child: Form(
                           key: _formKey,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -1059,12 +1369,10 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                 subtitle:
                                     'Complete all required fields to register.',
                               ),
-
                               _buildLabel('Full Name *'),
                               TextFormField(
                                 controller: _nameController,
-                                textCapitalization:
-                                    TextCapitalization.words,
+                                textCapitalization: TextCapitalization.words,
                                 maxLength: 60,
                                 decoration: const InputDecoration(
                                   hintText: 'Enter your full name',
@@ -1073,7 +1381,6 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                 ),
                                 validator: _validateName,
                               ),
-
                               _buildLabel('Email Address *'),
                               TextFormField(
                                 controller: _emailController,
@@ -1085,7 +1392,6 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                 ),
                                 validator: _validateEmail,
                               ),
-
                               _buildLabel('Phone Number *'),
                               TextFormField(
                                 controller: _phoneController,
@@ -1098,7 +1404,6 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                 ),
                                 validator: _validatePhone,
                               ),
-
                               _buildLabel('Create Password *'),
                               TextFormField(
                                 controller: _passwordController,
@@ -1106,13 +1411,9 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                 maxLength: 32,
                                 decoration: InputDecoration(
                                   hintText: 'At least 8 characters',
-                                  prefixIcon:
-                                      const Icon(Icons.lock_outline),
+                                  prefixIcon: const Icon(Icons.lock_outline),
                                   counterText: '',
                                   suffixIcon: IconButton(
-                                    tooltip: _showPassword
-                                        ? 'Hide password'
-                                        : 'Show password',
                                     onPressed: () => setState(
                                       () => _showPassword = !_showPassword,
                                     ),
@@ -1132,7 +1433,6 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                   color: Colors.black54,
                                 ),
                               ),
-
                               _buildLabel('Select Course *'),
                               DropdownButtonFormField<String>(
                                 initialValue: _selectedCourse,
@@ -1147,15 +1447,13 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                     child: Text(course),
                                   );
                                 }).toList(),
-                                onChanged: (value) => setState(
-                                  () => _selectedCourse = value,
-                                ),
+                                onChanged: (value) =>
+                                    setState(() => _selectedCourse = value),
                                 validator: (value) =>
                                     value == null || value.isEmpty
-                                        ? 'Please select a course.'
-                                        : null,
+                                    ? 'Please select a course.'
+                                    : null,
                               ),
-
                               _buildLabel('Gender *'),
                               RadioGroup<String>(
                                 groupValue: _gender,
@@ -1192,15 +1490,15 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                     ),
                                   ),
                                 ),
-
                               _buildLabel('Date of Birth *'),
                               InkWell(
                                 onTap: _pickDate,
                                 borderRadius: BorderRadius.circular(12),
                                 child: InputDecorator(
                                   decoration: InputDecoration(
-                                    prefixIcon:
-                                        const Icon(Icons.calendar_month),
+                                    prefixIcon: const Icon(
+                                      Icons.calendar_month,
+                                    ),
                                     errorText: _dateOfBirth == null
                                         ? 'Please select your date of birth.'
                                         : null,
@@ -1212,7 +1510,6 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                   ),
                                 ),
                               ),
-
                               _buildLabel('Experience Level *'),
                               DropdownButtonFormField<String>(
                                 initialValue: _experience,
@@ -1235,14 +1532,12 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                     child: Text('Advanced'),
                                   ),
                                 ],
-                                onChanged: (value) => setState(
-                                  () => _experience = value,
-                                ),
+                                onChanged: (value) =>
+                                    setState(() => _experience = value),
                                 validator: (value) => value == null
                                     ? 'Please select your experience level.'
                                     : null,
                               ),
-
                               const SizedBox(height: 12),
                               CheckboxListTile(
                                 value: _acceptTerms,
@@ -1265,20 +1560,13 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                   () => _acceptTerms = value ?? false,
                                 ),
                               ),
-
                               const SizedBox(height: 24),
-
-                              // Animated loading indicator and label.
                               SizedBox(
                                 width: double.infinity,
                                 child: FilledButton.icon(
-                                  onPressed: _isSubmitting
-                                      ? null
-                                      : _submitForm,
+                                  onPressed: _isSubmitting ? null : _submitForm,
                                   icon: AnimatedSwitcher(
-                                    duration: const Duration(
-                                      milliseconds: 250,
-                                    ),
+                                    duration: const Duration(milliseconds: 250),
                                     child: _isSubmitting
                                         ? const SizedBox(
                                             key: ValueKey('loading'),
@@ -1295,9 +1583,7 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                           ),
                                   ),
                                   label: AnimatedSwitcher(
-                                    duration: const Duration(
-                                      milliseconds: 250,
-                                    ),
+                                    duration: const Duration(milliseconds: 250),
                                     child: Text(
                                       _isSubmitting
                                           ? 'Submitting...'
@@ -1312,22 +1598,18 @@ class _CourseFormScreenState extends State<CourseFormScreen> {
                                   ),
                                 ),
                               ),
-
                               const SizedBox(height: 12),
                               SizedBox(
                                 width: double.infinity,
                                 child: OutlinedButton.icon(
-                                  onPressed:
-                                      _isSubmitting ? null : _clearForm,
+                                  onPressed: _isSubmitting ? null : _clearForm,
                                   icon: const Icon(Icons.refresh),
                                   label: const Text('Clear Form'),
                                 ),
                               ),
-
                               const SizedBox(height: 12),
                               const Text(
-                                '* Required fields. Correct any errors '
-                                'before submitting.',
+                                '* Required fields. Correct any errors before submitting.',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.black54,
