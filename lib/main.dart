@@ -1,8 +1,24 @@
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => LearningState(),
+      child: const MyApp(),
+    ),
+  );
+}
+
+// PROVIDER STATE MANAGEMENT
+class LearningState extends ChangeNotifier {
+  int completedResources = 0;
+
+  void markAsLearned() {
+    completedResources++;
+    notifyListeners();
+  }
 }
 
 // STATELESS WIDGET
@@ -14,11 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'E-Learning Resources',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-
-      // NAMED ROUTES
+      theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
@@ -34,7 +46,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// HOME SCREEN - STATELESS WIDGET
+// HOME SCREEN
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -44,6 +56,9 @@ class HomePage extends StatelessWidget {
 
     bool isMobile = width < 600;
     bool isTablet = width >= 600 && width < 1000;
+
+    // Read shared Provider state
+    int completed = context.watch<LearningState>().completedResources;
 
     return Scaffold(
       appBar: AppBar(
@@ -93,8 +108,27 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 20),
 
+              // PROVIDER: shared state displayed on Home
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.check_circle,
+                      color: Colors.green),
+                  title: const Text('Resources Marked as Learned'),
+                  trailing: Text(
+                    '$completed',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // RESPONSIVE RESOURCE CARDS
               if (isMobile)
                 Column(
                   children: [
@@ -154,9 +188,9 @@ class HomePage extends StatelessWidget {
                 title: Text('UI Design'),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 25),
 
-              // STATEFUL WIDGET EXAMPLE
+              // STATEFUL WIDGET: local state using setState()
               const CounterWidget(),
             ],
           ),
@@ -203,7 +237,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// STATEFUL WIDGET
+// STATEFUL WIDGET: SETSTATE EXAMPLE
 class CounterWidget extends StatefulWidget {
   const CounterWidget({super.key});
 
@@ -222,7 +256,7 @@ class _CounterWidgetState extends State<CounterWidget> {
         child: Column(
           children: [
             const Text(
-              'Stateful Widget Example',
+              'setState() Example',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -233,7 +267,6 @@ class _CounterWidgetState extends State<CounterWidget> {
               'Button clicked: $count times',
               style: const TextStyle(fontSize: 18),
             ),
-            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -249,29 +282,24 @@ class _CounterWidgetState extends State<CounterWidget> {
   }
 }
 
-// RESOURCES SCREEN - STATELESS WIDGET
+// RESOURCES SCREEN
 class ResourcesScreen extends StatelessWidget {
   const ResourcesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('All Resources'),
-      ),
+      appBar: AppBar(title: const Text('All Resources')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           const Text(
             'Available Resources',
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
           ),
           ListTile(
             leading: const Icon(Icons.book),
-            title: const Text('Flutter Basics'),
+            title: const Text('Courses'),
             onTap: () => Navigator.pushNamed(context, '/courses'),
           ),
           ListTile(
@@ -290,7 +318,7 @@ class ResourcesScreen extends StatelessWidget {
   }
 }
 
-// RESOURCE DETAIL SCREEN - STATELESS WIDGET
+// RESOURCE DETAIL SCREEN
 class ResourceDetailScreen extends StatelessWidget {
   final String title;
 
@@ -301,32 +329,65 @@ class ResourceDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Listen to shared Provider state
+    final learningState = context.watch<LearningState>();
+
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.school, size: 80, color: Colors.blue),
-            const SizedBox(height: 20),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.school, size: 80, color: Colors.blue),
+              const SizedBox(height: 20),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 15),
-            const Text(
-              'Learning resources are available here.',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Back'),
-            ),
-          ],
+              const SizedBox(height: 15),
+              const Text(
+                'Explore this learning resource.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 20),
+
+              // PROVIDER: update shared state
+              Text(
+                'Total resources marked as learned: '
+                '${learningState.completedResources}',
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 12),
+
+              ElevatedButton.icon(
+                onPressed: () {
+                  context.read<LearningState>().markAsLearned();
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Resource marked as learned!'),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.check),
+                label: const Text('Mark as Learned'),
+              ),
+
+              const SizedBox(height: 12),
+
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Back'),
+              ),
+            ],
+          ),
         ),
       ),
     );
