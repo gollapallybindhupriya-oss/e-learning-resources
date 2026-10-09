@@ -11,7 +11,53 @@ void main() {
   );
 }
 
-// PROVIDER STATE
+// ================= CUSTOM STYLES =================
+
+class AppStyles {
+  static const Color primary = Color(0xFF3157A4);
+  static const Color accent = Color(0xFF00A6A6);
+  static const Color background = Color(0xFFF5F7FC);
+  static const Color cardColor = Colors.white;
+  static const Color textColor = Color(0xFF202A44);
+  static const Color subtitleColor = Color(0xFF64748B);
+
+  static const TextStyle appTitle = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
+
+  static const TextStyle heading = TextStyle(
+    fontSize: 25,
+    fontWeight: FontWeight.bold,
+    color: textColor,
+  );
+
+  static const TextStyle subtitle = TextStyle(
+    fontSize: 15,
+    color: subtitleColor,
+  );
+
+  static const TextStyle resourceTitle = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: textColor,
+  );
+
+  static const TextStyle body = TextStyle(
+    fontSize: 16,
+    color: textColor,
+  );
+
+  static const TextStyle buttonText = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
+}
+
+// ================= PROVIDER STATE =================
+
 class LearningState extends ChangeNotifier {
   int completedResources = 0;
 
@@ -21,7 +67,8 @@ class LearningState extends ChangeNotifier {
   }
 }
 
-// APP AND NAMED ROUTES
+// ================= APP THEME =================
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -30,10 +77,65 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'E-Learning Resources',
+
       theme: ThemeData(
-        primarySwatch: Colors.blue,
         useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppStyles.primary,
+          primary: AppStyles.primary,
+          secondary: AppStyles.accent,
+          surface: AppStyles.cardColor,
+        ),
+        scaffoldBackgroundColor: AppStyles.background,
+
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppStyles.primary,
+          foregroundColor: Colors.white,
+          centerTitle: false,
+          titleTextStyle: AppStyles.appTitle,
+          elevation: 0,
+        ),
+
+        cardTheme: CardThemeData(
+          color: AppStyles.cardColor,
+          elevation: 2,
+          margin: const EdgeInsets.all(8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppStyles.primary,
+            foregroundColor: Colors.white,
+            textStyle: AppStyles.buttonText,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 22,
+              vertical: 14,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+
+        textTheme: const TextTheme(
+          headlineSmall: AppStyles.heading,
+          titleMedium: AppStyles.resourceTitle,
+          bodyLarge: AppStyles.body,
+          bodyMedium: AppStyles.subtitle,
+        ),
+
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
+
       initialRoute: '/',
       routes: {
         '/': (_) => const HomePage(),
@@ -49,7 +151,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// HOME SCREEN
+// ================= HOME SCREEN =================
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -64,20 +167,23 @@ class HomePage extends StatelessWidget {
         title: const Text('E-Learning Resources'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(isMobile ? 12 : isTablet ? 25 : 40),
+        padding: EdgeInsets.all(
+          isMobile ? 12 : isTablet ? 25 : 40,
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // CUSTOM HEADER WIDGET
             const LearningHeader(),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
-            // CUSTOM SECTION TITLE
-            const SectionTitle(title: 'Explore Resources'),
+            const SectionTitle(
+              title: 'Explore Resources',
+              subtitle: 'Choose a category to start learning',
+            ),
 
-            const SizedBox(height: 15),
+            const SizedBox(height: 12),
 
-            // CUSTOM RESPONSIVE RESOURCE CARDS
             if (isMobile)
               Column(
                 children: [
@@ -133,10 +239,9 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // CUSTOM PROVIDER WIDGET
             const LearningProgressCard(),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 16),
 
             CustomActionButton(
               text: 'View All Resources',
@@ -148,7 +253,12 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            const SectionTitle(title: 'Available Resources'),
+            const SectionTitle(
+              title: 'Available Resources',
+              subtitle: 'Explore the learning materials',
+            ),
+
+            const SizedBox(height: 10),
 
             const ResourceInfoTile(
               icon: Icons.book,
@@ -165,7 +275,6 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // STATEFUL WIDGET EXAMPLE
             const CounterWidget(),
           ],
         ),
@@ -174,7 +283,8 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// CUSTOM WIDGET 1: HEADER
+// ================= HEADER WIDGET =================
+
 class LearningHeader extends StatelessWidget {
   const LearningHeader({super.key});
 
@@ -184,7 +294,7 @@ class LearningHeader extends StatelessWidget {
     final height = width < 600 ? 180.0 : 260.0;
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -193,20 +303,24 @@ class LearningHeader extends StatelessWidget {
             height: height,
             width: double.infinity,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
+            errorBuilder: (_, error, stackTrace) {
               return Container(
                 height: height,
-                color: Colors.blue.shade100,
+                color: AppStyles.primary,
                 child: const Center(
-                  child: Icon(Icons.school, size: 70),
+                  child: Icon(
+                    Icons.school,
+                    size: 70,
+                    color: Colors.white,
+                  ),
                 ),
               );
             },
           ),
           Container(
-            width: double.infinity,
             height: height,
-            color: Colors.black26,
+            width: double.infinity,
+            color: Colors.black38,
           ),
           Text(
             'Learn Flutter',
@@ -214,6 +328,12 @@ class LearningHeader extends StatelessWidget {
               color: Colors.white,
               fontSize: width < 600 ? 28 : 36,
               fontWeight: FontWeight.bold,
+              shadows: const [
+                Shadow(
+                  color: Colors.black45,
+                  blurRadius: 8,
+                ),
+              ],
             ),
           ),
         ],
@@ -222,31 +342,41 @@ class LearningHeader extends StatelessWidget {
   }
 }
 
-// CUSTOM WIDGET 2: SECTION TITLE
+// ================= SECTION TITLE =================
+
 class SectionTitle extends StatelessWidget {
   final String title;
+  final String? subtitle;
 
   const SectionTitle({
     super.key,
     required this.title,
+    this.subtitle,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 23,
-          fontWeight: FontWeight.bold,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
-      ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 5),
+          Text(
+            subtitle!,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
+      ],
     );
   }
 }
 
-// CUSTOM WIDGET 3: RESOURCE CARD
+// ================= RESOURCE CARD =================
+
 class ResourceCard extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -268,13 +398,8 @@ class ResourceCard extends StatelessWidget {
     return SizedBox(
       width: fullWidth ? double.infinity : 190,
       child: Card(
-        color: Colors.blue.shade50,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: Colors.blue),
-        ),
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           onTap: () {
             Navigator.pushNamed(context, route);
           },
@@ -282,25 +407,35 @@ class ResourceCard extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                Icon(icon, size: 42, color: Colors.blue),
-                const SizedBox(height: 10),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.bold,
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor:
+                      AppStyles.primary.withValues(alpha: 0.1),
+                  child: Icon(
+                    icon,
+                    size: 30,
+                    color: AppStyles.primary,
                   ),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 12),
                 Text(
-                  description,
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
+                Text(
+                  description,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
                 const Text(
                   'Open →',
-                  style: TextStyle(color: Colors.blue),
+                  style: TextStyle(
+                    color: AppStyles.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -311,7 +446,8 @@ class ResourceCard extends StatelessWidget {
   }
 }
 
-// CUSTOM WIDGET 4: REUSABLE ACTION BUTTON
+// ================= CUSTOM ACTION BUTTON =================
+
 class CustomActionButton extends StatelessWidget {
   final String text;
   final IconData icon;
@@ -332,15 +468,13 @@ class CustomActionButton extends StatelessWidget {
         onPressed: onPressed,
         icon: Icon(icon),
         label: Text(text),
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(16),
-        ),
       ),
     );
   }
 }
 
-// CUSTOM WIDGET 5: PROVIDER PROGRESS CARD
+// ================= PROVIDER PROGRESS CARD =================
+
 class LearningProgressCard extends StatelessWidget {
   const LearningProgressCard({super.key});
 
@@ -353,23 +487,21 @@ class LearningProgressCard extends StatelessWidget {
       child: ListTile(
         leading: const Icon(
           Icons.check_circle,
-          color: Colors.green,
+          color: AppStyles.accent,
           size: 35,
         ),
         title: const Text('Resources Marked as Learned'),
         trailing: Text(
           '$completed',
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
       ),
     );
   }
 }
 
-// CUSTOM WIDGET 6: RESOURCE INFORMATION TILE
+// ================= RESOURCE INFORMATION TILE =================
+
 class ResourceInfoTile extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -382,15 +514,21 @@ class ResourceInfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.blue),
-      title: Text(title),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+    return Card(
+      child: ListTile(
+        leading: Icon(icon, color: AppStyles.primary),
+        title: Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      ),
     );
   }
 }
 
-// STATEFUL WIDGET: SETSTATE
+// ================= SETSTATE COUNTER =================
+
 class CounterWidget extends StatefulWidget {
   const CounterWidget({super.key});
 
@@ -412,8 +550,9 @@ class _CounterWidgetState extends State<CounterWidget> {
             const SizedBox(height: 10),
             Text(
               'Button clicked: $count times',
-              style: const TextStyle(fontSize: 18),
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
+            const SizedBox(height: 10),
             CustomActionButton(
               text: 'Click Me',
               icon: Icons.touch_app,
@@ -430,7 +569,8 @@ class _CounterWidgetState extends State<CounterWidget> {
   }
 }
 
-// RESOURCES SCREEN
+// ================= RESOURCES SCREEN =================
+
 class ResourcesScreen extends StatelessWidget {
   const ResourcesScreen({super.key});
 
@@ -441,8 +581,19 @@ class ResourcesScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const SectionTitle(title: 'Available Resources'),
+          const SectionTitle(
+            title: 'Available Resources',
+            subtitle: 'Choose what you want to learn',
+          ),
           const SizedBox(height: 15),
+          const ResourceInfoTile(
+            icon: Icons.book,
+            title: 'Flutter Basics',
+          ),
+          const ResourceInfoTile(
+            icon: Icons.code,
+            title: 'Dart Programming',
+          ),
           ResourceCard(
             icon: Icons.book,
             title: 'Courses',
@@ -461,13 +612,19 @@ class ResourcesScreen extends StatelessWidget {
             description: 'Test your knowledge',
             route: '/quizzes',
           ),
+          CustomActionButton(
+            text: 'Back to Home',
+            icon: Icons.home,
+            onPressed: () => Navigator.pop(context),
+          ),
         ],
       ),
     );
   }
 }
 
-// RESOURCE DETAIL SCREEN
+// ================= RESOURCE DETAIL SCREEN =================
+
 class ResourceDetailScreen extends StatelessWidget {
   final String title;
 
@@ -483,35 +640,33 @@ class ResourceDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(
                 Icons.school,
                 size: 80,
-                color: Colors.blue,
+                color: AppStyles.primary,
               ),
               const SizedBox(height: 20),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
-              const SizedBox(height: 15),
-              const Text(
+              const SizedBox(height: 12),
+              Text(
                 'Explore this learning resource.',
+                style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 20),
               Text(
                 'Total resources marked as learned: '
                 '${learningState.completedResources}',
                 textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 15),
               CustomActionButton(
